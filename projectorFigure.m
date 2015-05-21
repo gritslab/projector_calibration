@@ -11,7 +11,7 @@ function varargout = projectorFigure(calibrationFile,projectorFlag,figNum)
 %   calibrationFile - (string)
 %       Path to projector calibration file.
 %
-%   projectorFlag - (1x1 logical) [false]
+%   projectorFlag - (1x1 logical) [true]
 %       If true the figure is created on the projector, if false Matlab's
 %       default figure is used and created on the local computer screen.
 %
@@ -46,7 +46,7 @@ function varargout = projectorFigure(calibrationFile,projectorFlag,figNum)
 narginchk(1,3)
 
 % Apply default values
-if nargin < 2, projectorFlag = false; end
+if nargin < 2, projectorFlag = true; end
 if nargin < 3,
     figNum = numel(get(0,'Children'));
     if figNum == 0

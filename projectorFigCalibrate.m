@@ -1,4 +1,4 @@
-function projectorFigCalibrate(trackableName,host,figPos)
+function projectorFigCalibrate(trackableName,host)
 % The "projectorFigCalibrate" function this function calibrates the the
 % projector to create figures that have the same coordiates as the
 % optitrack data points.
@@ -15,17 +15,8 @@ function projectorFigCalibrate(trackableName,host,figPos)
 %       IP address or host name of computer running optitrack that is
 %       streaming data from the VRPN Streaming Engine.
 %
-%   figPos - (1 x 4 number)
-%       Figure postion values. Recommended procedure to get figure
-%       position values is to create a matlab figure, drag it over to the
-%       projector screen, maximize it to fit the screen, then get the
-%       figure position value with the "get(gcf,'Position')". Use these
-%       values for the "figPos" arugment.
-%
 % EXAMPLES:
-%   figure;
-%   % Drag figure to projector screen and maximize figure.
-%   projectorFigCalibrate('K8','192.168.2.145',get(gcf,'Position'));
+%   projectorFigCalibrate('K8','192.168.2.145');
 %   % Follow instructions on command window.
 %
 % NOTES:
@@ -46,7 +37,7 @@ function projectorFigCalibrate(trackableName,host,figPos)
 %% Check Inputs
 
 % Check number of inputs
-narginchk(3,3)
+narginchk(2,2)
 
 % Check input arguments for errorss
 assert(ischar(trackableName),...
@@ -57,12 +48,8 @@ assert(ischar(host),...
     'projectorFigCalibrate:host',...
     'Input argument "host" must be a string')
 
-assert(isnumeric(figPos) && isreal(figPos) && isequal(size(figPos),[1 4]),...
-    'projectorFigCalibrate:figPos',...
-    'Input argument "figPos" must be a 1 x 4 vector of real numbers.')
-
 %% Create trackable
-T = trackable.trackable(trackableName,host);
+T = trackable.trackable(false,trackableName,host);
 validTrackable = T.init();
 assert(validTrackable,...
     'projectorFigCalibrate:trackable',...
@@ -75,7 +62,6 @@ close all
 figure(1)
 clf(1)
 set(1,'MenuBar','none')
-set(1,'Position',figPos)
 axH = gca;
 set(axH,'Position',[0 0 1 1])
 set(axH,'XLimMode','manual')
@@ -89,6 +75,13 @@ fprintf('+======================================+\n');
 fprintf('| Projector Figure Calibration Routine |\n');
 fprintf('+======================================+\n');
 fprintf('\n');
+
+fprintf('Drag the figure to projector screen and\n');
+fprintf('maximize the figure,\n');
+fprintf('then press ENTER.\n');
+pause
+fprintf('\n');
+
 fprintf('Zoom the projector in until all menus and\n');
 fprintf('borders are not visible in the figure,\n');
 fprintf('then press ENTER.\n');
@@ -112,7 +105,7 @@ end
 marker = struct('colorName',{'red','green','blue','yellow'},...
                 'color',{'r','g','b','y'},...
                 'pos',{[-.5 .5], [.5 .5], [.5 -.5], [-.5 -.5]},...
-                'size',43,...
+                'size',25,...
                 'coord',nan(2,1));
             
 %% Plot markers
@@ -134,7 +127,7 @@ for i = 1:nMarkers;
     fprintf('Move trackable to %s marker,             \n',upper(marker(i).colorName));
     fprintf('then press ENTER.\n');
     pause
-    T.update
+    T.update()
     marker(i).coord = T.position(1:2);
     fprintf('%s marker coordinates: x = %2.3f y = %2.3f\n',...
         upper(marker(i).colorName),marker(i).coord(1), marker(i).coord(2));
@@ -166,7 +159,7 @@ fprintf('\n');
 projectorFig.xLim = xLim;
 projectorFig.yLim = yLim;
 projectorFig.marker = marker;
-projectorFig.position = figPos;
+projectorFig.position = get(gcf,'Position');
 projectorFig.zoomNum = zoomNum; %#ok<STRNU>
 
 %% Save figure limits

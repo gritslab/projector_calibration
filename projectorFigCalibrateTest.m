@@ -20,7 +20,7 @@ function projectorFigCalibrateTest(trackableName,host,calibrationFile)
 %       Path to projector calibration file.
 %
 % EXAMPLES:
-%   projectorFigCalibrateTest('K8','192.168.2.145','projectorCalData.mat');
+%   projectorFigCalibrateTest('K8','192.168.2.145','projectorFigCalData.mat');
 %
 % NOTES:
 %
@@ -72,16 +72,16 @@ fprintf('Press ctrl-c to stop test program.');
 
 %% Create figure
 close all
-projectorFigure(calibrationFile);
+projectorFigure(calibrationFile,true);
 
 %% Create trackable
-T = trackable.trackable(trackableName,host);
+T = trackable.trackable(false,trackableName,host);
 T.init();
 T.orientationGlobalRotation_ = quaternion([0 0 pi])' * T.orientationGlobalRotation_;
 T.update();
 
 %% Initialize circle
-lineH = plot(T.position(1),T.position(2),'o','MarkerSize',85,'MarkerFaceColor','w');
+lineH = plot(T.position(1),T.position(2),'o','MarkerSize',40,'MarkerFaceColor','w');
 drawnow;
 
 %% Follow
